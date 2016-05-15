@@ -17,7 +17,7 @@
 //
 // Project home page: www.source-code.biz/base64coder/java
 
-package com.shares.io;
+package com.shares.security;
 
 /**
 * A Base64 encoder/decoder.

@@ -2,14 +2,16 @@ package com.shares.base;
 
 import java.util.Scanner;
 import com.shares.io.Save;
-import com.shares.utils.Utils;
 import com.shares.io.Load;
+import com.shares.utils.Utils;
 
 
 public class SharesConsole {
 	
 	private static final String FAIL = "Unknown Command (commands are case sensitive)";
 	private Core core = new Core();
+	private final Boolean loadOnInit = true;
+	private Boolean cancel = false;
 
 	
 	/*
@@ -27,7 +29,11 @@ public class SharesConsole {
 	private void console() {
 		
 		Boolean quit = false;
-		Scanner sc = new Scanner(System.in);	
+		Scanner sc = new Scanner(System.in);
+		
+		if(loadOnInit) {
+			this.core = Load.loadCore(Utils.appPath);
+		}
 			
         do{
         	coutf(String.format("> SHARES %s : ", com.shares.utils.Utils.VERSION));
@@ -44,8 +50,12 @@ public class SharesConsole {
         	
         	
         	// Quitting sequence.        	
-        	if(comms[0].equals("quit") | comms[0].equals("exit"))
+        	if(comms[0].equals("quit") || comms[0].equals("exit") || comms[0].equals("sd"))
         		break;
+        	else if (comms[0].equals("cancel")) {
+        		cancel = true;
+        		break;
+        	}
         	
         	
         	// Switch tree for processing the commands.        	
@@ -165,12 +175,12 @@ public class SharesConsole {
         			
         		/***********************************/
         		case "save":
-        			Save.saveCore(this.core, Utils.devSharesPathAndFilename);
+        			Save.saveCore(this.core, Utils.appPath);
         			break;
         			
         		/***********************************/
         		case "load":
-        			this.core = Load.loadCore(Utils.devSharesPathAndFilename);
+        			this.core = Load.loadCore(Utils.appPath);
         			break;
         			
         		/***********************************/
@@ -188,6 +198,10 @@ public class SharesConsole {
         	
         	
         } while(!quit);
+        
+        if(!cancel) {
+        	Save.saveCore(this.core, Utils.appPath);
+        }
         
         System.out.println("Quiting ...");
         
