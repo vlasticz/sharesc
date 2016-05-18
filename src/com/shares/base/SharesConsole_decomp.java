@@ -92,21 +92,21 @@ public class SharesConsole_decomp {
 	        					}
 	        					
 	        					else
-	        						failReaction();
+	        						cout("specify a valid family name");
 	        					
 	        					break;
 	        					
 	        				/***********************************/
 	        				case "perk":
+	        					
 	        					if(comms.length > 3) {
-	        						if(core.getFamily(comms[3]) != null) {
-	        							
+	        						if(core.getFamily(comms[3]) != null) {	        							
 	        							core.getFamily(comms[3]).addPerk(comms[2]);
 	        							
 	        						} else
-	        							failReaction(String.format("Family %s does not exist", comms[3]));
+	        							cout(String.format("Family %s does not exist", comms[3]));
 	        					} else
-	        						failReaction("Specify a valid family name");
+	        						cout("specify a valid family name");
 	        					
 	        					break;
 	        					
@@ -117,7 +117,7 @@ public class SharesConsole_decomp {
 	        			}
 	        			break;
         			} else 
-        				failReaction();
+        				cout("specify valid item to create");
         			
         			break;
         		
