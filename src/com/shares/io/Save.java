@@ -17,8 +17,7 @@ public class Save {
 				
 	            out.writeObject(core);
 	            out.flush();
-	            out.close();
-	            System.out.println("Core saved (" + path + ")");	            
+	            out.close();	            
 	        } catch(IOException e) {
 	        	e.printStackTrace();	            
 	        }
