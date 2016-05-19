@@ -1,81 +1,63 @@
-/*** Eclipse Class Decompiler plugin, copyright (c) 2016 Chen Chao (cnfree2000@hotmail.com) ***/
 package com.shares.base;
 
-import com.shares.base.Core;
-import com.shares.base.Family;
-import com.shares.base.Perk;
-import com.shares.io.Load;
-import com.shares.io.Save;
-import com.shares.security.Security;
-import com.shares.security.User;
-import com.shares.utils.Utils;
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Scanner;
+import com.shares.io.Save;
+import com.shares.io.Load;
+import com.shares.utils.Utils;
 
-public class SharesConsole_decomp {
-	private Scanner sc = new Scanner(System.in);
+
+public class SharesConsole_old {
+	
 	private static final String FAIL = "Unknown Command (commands are case sensitive)";
-	private static Security secure = new Security();
 	private Core core = new Core();
-	private String username;
-	private Boolean loadOnInit = true;
+	private final Boolean loadOnInit = true;
+	private Boolean cancel = false;
 
-
+	
 	/*
 	 * ENTRY POINT ... main()
 	 */
 	public static void main(String[] args) {
 		
-		cout(" ***-_ SHARES 0.0.3 _-***");
-		File s = new File(Utils.appPath);
-		
-		if (s.exists()) {
-			ArrayList<User> users = Load.loadUsers(Utils.appPath).getUsers();
-			secure.setUsers(users);
-		} else {
-			cout("No users were found. Default one was registered.");
-		}
-		
-
-		secure = new Security();
-		User user = secure.login();
-		
-		if (user != null) {
-			(new SharesConsole_decomp()).console(user);
-		} else {
-			cout("Login failed!");
-		}
+		new SharesConsole_old().console();
 	}
 	/*
-	 *
+	 * 
 	 */
-
-
-	private void console(User user) {
-
-		Boolean quit = false;
-		Boolean cancel = false;
+	
+	
+	private void console() {
 		
-		this.username = user.getName();
-		if (this.loadOnInit) {
+		Boolean quit = false;
+		Scanner sc = new Scanner(System.in);
+		
+		if(loadOnInit) {
 			this.core = Load.loadCore(Utils.appPath);
 		}
-
-		do {
-			coutf(String.format("> SHARES %s@%s: ", Utils.VERSION, this.username));
-
-			// Initiate the comms[], input from console, separate each word by the space and put them into comms[].
-			String[] comms = this.sc.nextLine().split(" ");
-
-			// Quitting sequence.
-			if(comms[0].equals("quit") || comms[0].equals("exit") || comms[0].equals("sd"))
-				break;
-			else if (comms[0].equals("cancel")) {
-				cancel = true;
-				break;
-			}
-
+			
+        do{
+        	coutf(String.format("> SHARES %s : ", com.shares.utils.Utils.VERSION));
+        	
+        	// Initiate the comms[], input from console, separate each word by the space and put them into comms[].
+        	String[] comms = sc.nextLine().split(" ");
+        	
+        	
+        	/*
+        	 *  
+        	 *  Commands ARE now case SENSITIVE !!!  
+        	 *  
+        	 */
+        	
+        	
+        	// Quitting sequence.        	
+        	if(comms[0].equals("quit") || comms[0].equals("exit") || comms[0].equals("sd"))
+        		break;
+        	else if (comms[0].equals("cancel")) {
+        		cancel = true;
+        		break;
+        	}
+        	
+        	
         	// Switch tree for processing the commands.        	
         	switch(comms[0]) {
         	
@@ -239,13 +221,13 @@ public class SharesConsole_decomp {
 	}
 	
 	
-	private static void cout(String msg) {
+	private void cout(String msg) {
 		
 		System.out.println(msg);
 	}
 	
 	
-	private static void coutf(String msg) {
+	private void coutf(String msg) {
 		
 		System.out.printf(msg);
 	}

@@ -7,6 +7,8 @@ import com.shares.base.Core;
 import com.shares.security.UsersContainer;
 import com.shares.utils.Utils;
 
+import lang.Lang;
+
 
 public class Load {
 	
@@ -35,5 +37,13 @@ public class Load {
         	e.printStackTrace();
         	return null;
         }
+	}
+	
+	
+	public static Lang loadLang(String path) {
+		
+		
+		
+		return null;
 	}
 }
