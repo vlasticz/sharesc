@@ -1,18 +1,35 @@
 package com.shares.utils;
 
 import java.time.LocalDateTime;
+import java.util.Properties;
 
 public class Utils {
 	
-	public static final String VERSION = "0.0.1";
+	public static final String VERSION = "0.1.0";
 	
 	public static final String appPath = System.getProperty("user.home") + "/ShareS";
 	public static final String coreFilename = "/core.dat";
 	public static final String usersFilename = "/uc.dat";
+	public static final String propsFilename = "/shares.properties";
 	
 	
 	/**
-	 * Returns a inner format of date and time
+	 * Returns default properties otherwise loaded from a file. 
+	 * @return Properties props
+	 */
+	public static Properties getDefaultProps() {
+		
+		Properties defaultProps = new Properties();
+		
+		defaultProps.setProperty("load.on.init", "true");
+		defaultProps.setProperty("load.users", "true");
+		
+		return defaultProps;
+	}
+	
+	
+	/**
+	 * Returns a inner format of date and time.
 	 * @return String dateTimeStr
 	 */
 	public static String getTimestamp() {

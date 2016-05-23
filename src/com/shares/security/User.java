@@ -61,8 +61,6 @@ public class User implements Serializable {
 
 	public Boolean comparePassword(String password) {
 		
-		System.out.println(MD5.crypt(password));
-		System.out.println(this.password);
 		return MD5.crypt(password).equals(this.password) ? Boolean.valueOf(true) : Boolean.valueOf(false);
 	}
 }

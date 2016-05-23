@@ -7,9 +7,15 @@ import com.shares.io.Load;
 import com.shares.io.Save;
 import com.shares.security.Security;
 import com.shares.security.User;
+import com.shares.security.UsersContainer;
 import com.shares.utils.Utils;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Scanner;
 
 public class SharesConsole {
@@ -18,7 +24,7 @@ public class SharesConsole {
 	private static Security secure = new Security();
 	private Core core = new Core();
 	private String username;
-	private Boolean loadOnInit = true;
+	private static Properties props = new Properties();
 
 
 	/*
@@ -26,21 +32,39 @@ public class SharesConsole {
 	 */
 	public static void main(String[] args) {
 		
-		cout(" ***-_ SHARES 0.0.3 _-***");
-		File s = new File(Utils.appPath);
 		
-		if (s.exists()) {
-			ArrayList<User> users = Load.loadUsers(Utils.appPath).getUsers();
+		// Load properties from a file
+		InputStream in = null;
+		
+		try {			
+			in = new FileInputStream(Utils.appPath + "/shares.properties");
+			props.load(in);
+			
+		} catch(FileNotFoundException fe) {			
+			props = Utils.getDefaultProps();
+			
+		} catch(IOException e) {			
+			e.printStackTrace();
+		}
+		
+		
+		// Console begins
+		cout(" ***-_ SHARES " + Utils.VERSION + " _-***");
+		File s = new File(Utils.appPath + Utils.usersFilename);
+		
+		if (s.exists() && Boolean.valueOf(props.getProperty("load.users"))) {
+			ArrayList<User> users = Load.loadUsers(Utils.appPath).getUsers();			
 			secure.setUsers(users);
+			
 		} else {
 			cout("No users were found. Default one was registered.");
 		}
 		
 
-		secure = new Security();
 		User user = secure.login();
 		
 		if (user != null) {
+			cout("Login successful!\n");
 			(new SharesConsole()).console(user);
 		} else {
 			cout("Login failed!");
@@ -57,7 +81,8 @@ public class SharesConsole {
 		Boolean cancel = false;
 		
 		this.username = user.getName();
-		if (this.loadOnInit) {
+		if (Boolean.valueOf(props.getProperty("load.on.init"))) {											// The very first value from properties file	
+			
 			this.core = Load.loadCore(Utils.appPath);
 		}
 
@@ -91,7 +116,7 @@ public class SharesConsole {
 	        					}
 	        					
 	        					else
-	        						cout("specify a valid family name");
+	        						cout("Specify a valid family name.");
 	        					
 	        					break;
 	        					
@@ -105,7 +130,19 @@ public class SharesConsole {
 	        						} else
 	        							cout(String.format("Family %s does not exist", comms[3]));
 	        					} else
-	        						cout("specify a valid family name");
+	        						cout("Specify a valid family name.");
+	        					
+	        					break;
+	        					
+	        				/***********************************/
+	        				case "user":
+	        					
+	        					if(comms.length > 3) {	        						
+	        						secure.addUser(comms[2], comms[3]);
+									cout("User added.");
+	        					} else {
+	        						cout("Specify the user and the password.");
+	        					}
 	        					
 	        					break;
 	        					
@@ -116,7 +153,7 @@ public class SharesConsole {
 	        			}
 	        			break;
         			} else 
-        				cout("specify valid item to create");
+        				cout("Specify a valid item to create.");
         			
         			break;
         		
@@ -146,9 +183,20 @@ public class SharesConsole {
         							} else
         								failReaction(String.format("Family %s does not exist", comms[3]));
         						} else
-        							failReaction("Specify a valid family name");
+        							failReaction("Specify a valid family name.");
         						
         						break;
+        						
+        					/***********************************/
+        					case "user":
+        						if(comms.length > 2) {	        						
+	        						secure.remUser(comms[2]);
+									cout("User removed.");
+	        					} else {
+	        						cout("Specify the user.");
+	        					}
+	        					
+	        					break;
         						
         					/***********************************/
         					default:
@@ -168,8 +216,7 @@ public class SharesConsole {
 					if(comms.length > 2) {
 						
 						for(Family family : core.getFamilies()) {							
-							if(comms[1].equals(family.getName())) {								
-								System.out.println("family found");
+							if(comms[1].equals(family.getName())) {
 								
 								if(family.getPerk(comms[2]) == null) {
 									failReaction("Perk \"" + comms[2] + "\" not found in family " + comms[1]);
@@ -181,7 +228,7 @@ public class SharesConsole {
         			break;
 	        			
         		/***********************************/										// just optical separation :)        			
-        		case "show":
+        		case "show":        			
         			for(Family family : core.getFamilies()) {
         				System.out.printf("\nFamily: %s\n", family.getName());
         				for(Perk perk : family.getPerks()) {
@@ -192,7 +239,9 @@ public class SharesConsole {
         			
         		/***********************************/
         		case "save":
-        			Save.saveCore(this.core, Utils.appPath);
+        			Save.saveUsers(new UsersContainer(secure.getUsers()), Utils.appPath);
+                	Save.saveCore(this.core, Utils.appPath);
+                	Save.saveProperties(props, Utils.appPath);
         			break;
         			
         		/***********************************/
@@ -217,7 +266,9 @@ public class SharesConsole {
         } while(!quit);
         
         if(!cancel) {
+        	Save.saveUsers(new UsersContainer(secure.getUsers()), Utils.appPath);
         	Save.saveCore(this.core, Utils.appPath);
+        	Save.saveProperties(props, Utils.appPath);
         }
         
         System.out.println("Quitting ...");

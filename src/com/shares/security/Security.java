@@ -9,6 +9,7 @@ public class Security {
 	private ArrayList<User> users;
 
 	public Security() {
+		
 		this.sc = new Scanner(System.in);
 		this.users = new ArrayList<User>();
 		this.users.add(new User());
@@ -33,6 +34,7 @@ public class Security {
 	
 
 	public Boolean setUsers(ArrayList<User> users) {
+		
 		if (users.isEmpty()) {
 			return false;
 		} else {
@@ -43,21 +45,22 @@ public class Security {
 	
 
 	public void addUser(String username, String password) {
+		
 		this.users.add(new User(username, password));
 	}
 	
 
 	public void remUser(String username) {
-		
-		for(User user : users) {
-			if (user.getName().equals(username)) {
-				this.users.remove(user);
-			}
+				
+		if(isUser(username)) {
+			User user = getUser(username);
+			this.users.remove(user);
 		}
 	}
 	
 
 	public User login() {
+		
 		System.out.printf("Enter username: ", new Object[0]);
 		String username = this.sc.nextLine();
 		System.out.printf("Enter password: ", new Object[0]);
@@ -67,11 +70,10 @@ public class Security {
 	
 
 	private User loginUser(String username, String password) {
-		System.out.println("name: " + username);
-		System.out.println("hashed pass: " + MD5.crypt(password));
-		if (this.isUser(username).booleanValue()) {
+		
+		if (this.isUser(username)) {
 			User user = this.getUser(username);
-			if (user.comparePassword(password).booleanValue()) {
+			if (user.comparePassword(password)) {
 				return user;
 			}
 		}
