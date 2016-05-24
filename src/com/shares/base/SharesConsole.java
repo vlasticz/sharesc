@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Scanner;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class SharesConsole {
 	private Scanner sc = new Scanner(System.in);
 	private static final String FAIL = "Unknown Command (commands are case sensitive)";
@@ -25,6 +28,7 @@ public class SharesConsole {
 	private Core core = new Core();
 	private String username;
 	private static Properties props = new Properties();
+	private static final Logger logger = LogManager.getLogger("shares");
 
 
 	/*
@@ -65,6 +69,7 @@ public class SharesConsole {
 		
 		if (user != null) {
 			cout("Login successful!\n");
+			logger.info("User successfully logged");
 			(new SharesConsole()).console(user);
 		} else {
 			cout("Login failed!");
