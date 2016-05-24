@@ -1,5 +1,7 @@
 package com.shares.io;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -18,7 +20,11 @@ public class Save {
 			try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + Utils.coreFilename))) {				
 	            out.writeObject(core);
 	            out.flush();
-	            out.close();	  
+	            out.close();
+	            
+			} catch(FileNotFoundException fe) {
+				createPath(path);
+				saveCore(core, path);
 	            
 	        } catch(IOException e) {	        	
 	        	e.printStackTrace();	        
@@ -35,7 +41,11 @@ public class Save {
 			try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + Utils.usersFilename))) {				
 	            out.writeObject(uc);
 	            out.flush();
-	            out.close();	 
+	            out.close();
+	            
+			} catch(FileNotFoundException fe) {
+				createPath(path);
+				saveUsers(uc, path);
 	            
 	        } catch(IOException e) {	        	
 	        	e.printStackTrace();	        	
@@ -51,9 +61,19 @@ public class Save {
 			try(FileOutputStream out = new FileOutputStream(path + Utils.propsFilename)) {				
 				properties.store(out, "SharesC properties");
 				
+			} catch(FileNotFoundException fe) {
+				createPath(path);
+				saveProperties(properties, path);
+				
 			} catch(IOException e) {				
 				e.printStackTrace();				
 			}
 		}
+	}
+	
+	
+	private static boolean createPath(String path) {
+		
+		return new File(path).mkdirs();
 	}
 }

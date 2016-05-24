@@ -239,9 +239,7 @@ public class SharesConsole {
         			
         		/***********************************/
         		case "save":
-        			Save.saveUsers(new UsersContainer(secure.getUsers()), Utils.appPath);
-                	Save.saveCore(this.core, Utils.appPath);
-                	Save.saveProperties(props, Utils.appPath);
+        			saveAll();
         			break;
         			
         		/***********************************/
@@ -266,14 +264,19 @@ public class SharesConsole {
         } while(!quit);
         
         if(!cancel) {
-        	Save.saveUsers(new UsersContainer(secure.getUsers()), Utils.appPath);
-        	Save.saveCore(this.core, Utils.appPath);
-        	Save.saveProperties(props, Utils.appPath);
+        	saveAll();
         }
         
         System.out.println("Quitting ...");
         
         sc.close();		
+	}
+	
+	
+	private void saveAll() {
+		Save.saveUsers(new UsersContainer(secure.getUsers()), Utils.appPath);
+    	Save.saveCore(this.core, Utils.appPath);
+    	Save.saveProperties(props, Utils.appPath);
 	}
 	
 	

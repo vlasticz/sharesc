@@ -1,16 +1,25 @@
 package com.shares.security;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Security {
 	
+	private Console console;
 	private Scanner sc;
+	private boolean useScanner = false;
 	private ArrayList<User> users;
 
 	public Security() {
 		
-		this.sc = new Scanner(System.in);
+		// Console works only if the app is run outside of the IDE.
+		
+		this.console = System.console();
+		if (console == null) {	        
+	        this.sc = new Scanner(System.in);
+	        useScanner = true;
+	    }
 		this.users = new ArrayList<User>();
 		this.users.add(new User());
 	}
@@ -61,11 +70,20 @@ public class Security {
 
 	public User login() {
 		
-		System.out.printf("Enter username: ", new Object[0]);
-		String username = this.sc.nextLine();
-		System.out.printf("Enter password: ", new Object[0]);
-		String password = this.sc.next();
-		return this.loginUser(username, password);
+		if(useScanner) {
+			System.out.printf("Enter username: ");
+			String username = this.sc.nextLine();
+			System.out.printf("Enter password: ");
+			String password = this.sc.nextLine();
+			return this.loginUser(username, password);
+			
+		} else {
+			System.out.printf("Enter username: ", new Object[0]);
+			String username = this.console.readLine();
+			System.out.printf("Enter password: ", new Object[0]);
+			String password = String.valueOf(this.console.readPassword());
+			return this.loginUser(username, password);
+		}
 	}
 	
 
