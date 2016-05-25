@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
 	<Appenders>
-		<File name="File" fileName="${sys:logPath}/app.log">
+		<File name="File" fileName="${sys:user.home}/ShareS/logs/run.log">
       		<PatternLayout>
         		<Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
       		</PatternLayout>
@@ -9,7 +9,7 @@
 	</Appenders>
 	
 	<Loggers>
-		<Root level="ALL">
+		<Root level="TRACE">
 			<AppenderRef ref="File"/>
 		</Root>
 	</Loggers>

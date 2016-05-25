@@ -28,7 +28,7 @@ public class SharesConsole {
 	private Core core = new Core();
 	private String username;
 	private static Properties props = new Properties();
-	private static final Logger logger = LogManager.getLogger("shares");
+	private static Logger logger;
 
 
 	/*
@@ -36,7 +36,11 @@ public class SharesConsole {
 	 */
 	public static void main(String[] args) {
 		
+		logger = LogManager.getLogger("shares");
 		
+		if(logger.isInfoEnabled())
+			logger.info("ShareS " + Utils.VERSION + " started");
+				
 		// Load properties from a file
 		InputStream in = null;
 		
@@ -69,10 +73,17 @@ public class SharesConsole {
 		
 		if (user != null) {
 			cout("Login successful!\n");
-			logger.info("User successfully logged");
-			(new SharesConsole()).console(user);
+			
+			if(logger.isInfoEnabled())
+				logger.info("User successfully logged in. User: " + user.getName());
+			
+			new SharesConsole().console(user);
+			
 		} else {
 			cout("Login failed!");
+			
+			if(logger.isWarnEnabled())
+				logger.warn("Failed to log user");
 		}
 	}
 	/*
@@ -100,7 +111,7 @@ public class SharesConsole {
 			// Quitting sequence.
 			if(comms[0].equals("quit") || comms[0].equals("exit") || comms[0].equals("sd"))
 				break;
-			else if (comms[0].equals("cancel")) {
+			else if (comms[0].equals("cancel") || comms[0].equals("abort")) {
 				cancel = true;
 				break;
 			}
@@ -271,17 +282,21 @@ public class SharesConsole {
         if(!cancel) {
         	saveAll();
         }
-        
+                
+        sc.close();
         System.out.println("Quitting ...");
-        
-        sc.close();		
+        if(logger.isTraceEnabled())
+        	logger.trace("Exit");
 	}
 	
 	
 	private void saveAll() {
+		
 		Save.saveUsers(new UsersContainer(secure.getUsers()), Utils.appPath);
-    	Save.saveCore(this.core, Utils.appPath);
-    	Save.saveProperties(props, Utils.appPath);
+	    Save.saveCore(this.core, Utils.appPath);
+	    Save.saveProperties(props, Utils.appPath);
+		if(logger.isInfoEnabled())
+	    	logger.info("Successfully saved");
 	}
 	
 	
