@@ -1,4 +1,3 @@
-/*** Eclipse Class Decompiler plugin, copyright (c) 2016 Chen Chao (cnfree2000@hotmail.com) ***/
 package com.shares.security;
 
 import java.io.Serializable;
@@ -14,7 +13,7 @@ public class User implements Serializable {
 	
 
 	public User(String name, String password) {
-		if (name != null || name.length() != 0 || name != "root") {
+		if (name != null || name != "root") {
 			this.username = name;
 		}
 
