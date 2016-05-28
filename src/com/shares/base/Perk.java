@@ -59,16 +59,20 @@ public class Perk implements Serializable {
 	}
 	
 	
-	public String addValue() {
+	public boolean addValue() {
 		
 		this.value += 1;
-		return "value added";
+		return true;
 	}
 	
 	
-	public String subValue() {
+	public boolean subValue() {
 		
-		this.value -= 1;
-		return "value substracted";
+		if(this.value > 0) {
+			this.value -= 1;
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

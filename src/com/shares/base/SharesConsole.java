@@ -22,13 +22,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class SharesConsole {
+	
+	private static SharesConsole shares;
 	private Scanner sc = new Scanner(System.in);
 	private static final String FAIL = "Unknown Command (commands are case sensitive)";
 	private static Security secure = new Security();
 	private Core core = new Core();
 	private String username;
 	private static Properties props = new Properties();
-	private static Logger logger;
+	public static Logger logger;
+	private boolean saveProperties = false;
 
 
 	/*
@@ -36,10 +39,20 @@ public class SharesConsole {
 	 */
 	public static void main(String[] args) {
 		
-		logger = LogManager.getLogger("shares");
+		shares = new SharesConsole();
+		shares.init();
+	}
+	/*
+	 *
+	 */
+	
+	
+	private void init() {
+		
+		logger = LogManager.getLogger("Core");
 		
 		if(logger.isInfoEnabled())
-			logger.info("ShareS " + Utils.VERSION + " started");
+			logger.info("============== ShareS " + Utils.VERSION + " started ==============");
 				
 		// Load properties from a file
 		InputStream in = null;
@@ -48,10 +61,19 @@ public class SharesConsole {
 			in = new FileInputStream(Utils.appPath + "/shares.properties");
 			props.load(in);
 			
+			if(logger.isInfoEnabled())
+				logger.info("Properties file loaded.");
+			
 		} catch(FileNotFoundException fe) {			
 			props = Utils.getDefaultProps();
+			saveProperties = true;
 			
-		} catch(IOException e) {			
+			if(logger.isWarnEnabled())
+				logger.warn("Default properties loaded.");
+			
+		} catch(IOException e) {
+			if(logger.isErrorEnabled())
+				logger.error(" ", e);
 			e.printStackTrace();
 		}
 		
@@ -65,7 +87,10 @@ public class SharesConsole {
 			secure.setUsers(users);
 			
 		} else {
-			cout("No users were found. Default one was registered.");
+			cout("No users file found or loading is forbiden. Default one made available.");
+			
+			if(logger.isWarnEnabled())
+				logger.warn("No users file found or loading is forbiden. Default one made available.");
 		}
 		
 
@@ -75,20 +100,17 @@ public class SharesConsole {
 			cout("Login successful!\n");
 			
 			if(logger.isInfoEnabled())
-				logger.info("User successfully logged in. User: " + user.getName());
+				logger.info("User successfully logged in. User: " + user.getName() + ".");
 			
-			new SharesConsole().console(user);
+			shares.console(user);
 			
 		} else {
 			cout("Login failed!");
 			
 			if(logger.isWarnEnabled())
-				logger.warn("Failed to log user");
+				logger.warn("User login failed.");
 		}
 	}
-	/*
-	 *
-	 */
 
 
 	private void console(User user) {
@@ -121,6 +143,7 @@ public class SharesConsole {
         	
         		/***********************************/										// just optical separation :)
         		case "new":
+        			
         			if(comms.length > 1) {
 	        			switch(comms[1]) {
 	       
@@ -128,36 +151,83 @@ public class SharesConsole {
 	        				case "family":
 	        					
 	        					if(comms.length > 2) {
-		        					core.addFamily(comms[2]);
+	        						
+		        					if(core.addFamily(comms[2])) {
+		        						cout("Family created.");
+		        						
+		        						if(logger.isTraceEnabled())
+		        							logger.trace("Family " + comms[2] + " created.");
+		        						
+		        					} else {
+		        						cout("Failed to create family. Name is invalid or the family already exists.");
+		        						
+		        						if(logger.isTraceEnabled())
+		        							logger.trace("Failed to create family " + comms[2] + ". Name is invalid or the family already exists.");
+		        					}
+	        					} else {
+	        						cout("Specify valid family name.");
 	        					}
-	        					
-	        					else
-	        						cout("Specify a valid family name.");
 	        					
 	        					break;
 	        					
 	        				/***********************************/
 	        				case "perk":
 	        					
-	        					if(comms.length > 3) {
-	        						if(core.getFamily(comms[3]) != null) {	        							
-	        							core.getFamily(comms[3]).addPerk(comms[2]);
-	        							
-	        						} else
-	        							cout(String.format("Family %s does not exist", comms[3]));
-	        					} else
-	        						cout("Specify a valid family name.");
+	        					if(comms.length > 2) {
+	        						
+		        					if(comms.length > 3) {
+		        						
+		        						if(core.getFamily(comms[3]) != null) {	
+		        							
+		        							if(core.getFamily(comms[3]).addPerk(comms[2])) {
+		        								cout("Perk added");
+		        								
+		        								if(logger.isTraceEnabled())
+		        									logger.trace("Perk " + comms[2] + " added to family " + comms[3] + ".");
+		        								
+		        							} else {
+		        								cout("Failed to create perk. Name is invalid or the perk already exists.");
+		        								
+		        								if(logger.isTraceEnabled())
+		        									logger.trace("Failed to create perk " + comms[2] + ". Name is invalid or the perk already exists.");
+		        							}
+		        							
+		        						} else {
+		        							cout("Family " + comms[3] + " doesn't exist.");
+		        						}		        							
+		        					} else {
+		        						cout("Specify valid family name.");
+		        					}		        						
+	        					} else {
+	        						cout("Specify valid perk name.");
+	        					}
 	        					
 	        					break;
 	        					
 	        				/***********************************/
 	        				case "user":
 	        					
-	        					if(comms.length > 3) {	        						
-	        						secure.addUser(comms[2], comms[3]);
-									cout("User added.");
+	        					if(comms.length > 2) {
+	        						
+		        					if(comms.length > 3) {
+		        						
+		        						if(secure.addUser(comms[2], comms[3])) {
+		        							cout("User created.");
+		        							
+		        							if(logger.isTraceEnabled())
+		        								logger.trace("User " + comms[2] + " created.");
+		        							
+		        						} else {
+		        							cout("User already exists.");
+		        							
+		        							if(logger.isTraceEnabled())
+		        								logger.trace("User " + comms[2] + " already exists.");
+		        						}										
+		        					} else {
+		        						cout("Specify password.");
+		        					}
 	        					} else {
-	        						cout("Specify the user and the password.");
+	        						cout("Specify username.");
 	        					}
 	        					
 	        					break;
@@ -167,49 +237,94 @@ public class SharesConsole {
 	        					failReaction();
 	        					break;
 	        			}
-	        			break;
         			} else 
-        				cout("Specify a valid item to create.");
+        				cout("Specify valid item to create.");
         			
         			break;
         		
         		/***********************************/
         		case "remove":
+        			
         			if(comms.length > 1) {
         				switch(comms[1]) {
         				
         					/***********************************/
         					case "family":
-        						if(comms.length > 2) {
-        							core.removeFamily(comms[2]);       							
-        						}
         						
-        						else
-        							failReaction();
+        						if(comms.length > 2) {
+        							
+        							if(core.removeFamily(comms[2])) {
+        								cout("Family removed.");
+        								
+        								if(logger.isTraceEnabled())
+        									logger.trace("Family " + comms[2] + " removed.");
+        								
+        							} else {
+        								cout("Family " + comms[2] + " doesn't exist.");
+        								
+        								if(logger.isTraceEnabled())
+        									logger.trace("Family " + comms[2] + " doesn't exist.");
+        							}
+        						} else {
+        							cout("Specify valid family name.");
+        						}
         						
         						break;
         						
         					/***********************************/
         					case "perk":
-        						if(comms.length > 3) {
-        							if(core.getFamily(comms[3]) != null) {
-        							
-        								core.getFamily(comms[3]).removePerk(comms[2]);
-        								
-        							} else
-        								failReaction(String.format("Family %s does not exist", comms[3]));
-        						} else
-        							failReaction("Specify a valid family name.");
+        						
+        						if(comms.length > 2) {
+        						        						
+	        						if(comms.length > 3) {
+	        							
+	        							if(core.isFamily(comms[3])) { 
+	        								
+	        								if(core.getFamily(comms[3]).removePerk(comms[2])) {
+	        									cout("Perk removed.");
+	        									
+	        									if(logger.isTraceEnabled())
+	        										logger.trace("Perk " + comms[2] + " removed from family " + comms[3] + ".");
+	        									
+	        								} else {
+	        									cout("Perk " + comms[2] + " doesn't exist.");
+	        									
+	        									if(logger.isTraceEnabled())
+	        										logger.trace("Perk " + comms[2] + " doesn't exist.");
+	        								}
+	        							} else {
+	        								cout("Family " + comms[3] + " doesn't exist.");
+	        							}
+	        						} else {
+	        							cout("Specify valid family name.");
+	        						}
+        						} else {
+        							cout("Specify valid perk name.");
+        						}
         						
         						break;
         						
         					/***********************************/
         					case "user":
-        						if(comms.length > 2) {	        						
-	        						secure.remUser(comms[2]);
-									cout("User removed.");
+        						
+        						if(comms.length > 2) {	
+        							
+	        						if(secure.remUser(comms[2])) {
+	        							cout("User removed.");
+	        							
+	        							if(logger.isTraceEnabled())
+	        								logger.trace("User " + comms[2] + " removed.");
+	        							
+	        						} else {
+	        							cout("User " + comms[2] + " doesn't exist.");
+	        							
+	        							if(logger.isTraceEnabled()) {
+	        								logger.trace("User " + comms[2] + " doesn't exist.");
+	        							}
+	        						}
+									
 	        					} else {
-	        						cout("Specify the user.");
+	        						cout("Specify username.");
 	        					}
 	        					
 	        					break;
@@ -220,37 +335,95 @@ public class SharesConsole {
         						
         						break;
         				}
-        			}
-        			
-        			else
-        				failReaction();
+        			} else
+        				cout("Specify valid item to remove.");
         			
         			break;
         			
         		/***********************************/
-        		case "add":																// working name !!! --should be changed
-					if(comms.length > 2) {
-						
-						for(Family family : core.getFamilies()) {							
-							if(comms[1].equals(family.getName())) {
+        		case "add":	
+        			
+        			if(comms.length > 1) {
+        				
+						if(comms.length > 2) {
 								
-								if(family.getPerk(comms[2]) == null) {
-									failReaction("Perk \"" + comms[2] + "\" not found in family " + comms[1]);
-								}else
-									cout(family.getPerk(comms[2]).addValue());
+							if(core.isFamily(comms[1])) {
+								Family family = core.getFamily(comms[1]);
+								
+								if(family.isPerk(comms[2])) {
+									
+									if(family.getPerk(comms[2]).addValue()) {
+										cout("Value added.");
+										
+										if(logger.isTraceEnabled())
+											logger.trace("Value added to perk " + comms[2] + " of family " + comms[1] + " by " + this.username + ".");
+									}
+									
+								} else {
+									cout("Perk " + comms[2] + " not found in family " + comms[1]);
+								}								
+							} else {
+								cout("Family " + comms[1] + " doesn't exist.");
 							}
-						}
+	        			} else {
+	        				cout("Specify valid perk name.");
+	        			}
+        			} else {
+        				cout("Specify valid family name.");
         			}
+					
+        			break;
+        			
+        		/***********************************/
+        		case "sub":
+        			
+        			if(comms.length > 1) {
+        				
+	        			if(comms.length > 2) {
+	        				
+	        				if(core.isFamily(comms[1])) {
+	        					Family family = core.getFamily(comms[1]);
+        						
+        						if(family.isPerk(comms[2])) {	
+        							
+        							if(family.getPerk(comms[2]).subValue()) {
+        								cout("Value substracted.");
+        								
+        								if(logger.isTraceEnabled())
+        									logger.trace("Value substracted from perk " + comms[2] + " of family " + comms[1] + " by " + this.username + ".");
+        								
+        							} else {
+        								cout("Value cannot be lower than zero.");
+        								
+        								if(logger.isTraceEnabled())
+        									logger.trace("Value of perk " + comms[2] + " of family " + comms[1] + " is already zero.");
+        							}        							
+        							
+        						} else {
+        							cout("Perk " + comms[2] + " not found in family " + comms[1]);
+        						}
+        					} else {
+        						cout("Family " + comms[1] + " doesn't exist.");
+        					}
+	        			} else {
+	        				cout("Specify valid perk name.");
+	        			}
+        			} else {
+        				cout("Specify valid family name.");
+        			}
+        			
         			break;
 	        			
         		/***********************************/										// just optical separation :)        			
-        		case "show":        			
+        		case "show":  
+        			
         			for(Family family : core.getFamilies()) {
         				System.out.printf("\nFamily: %s\n", family.getName());
         				for(Perk perk : family.getPerks()) {
         					cout(" Perk: " + perk.getCaption() + ": " + perk.getValue());
         				}
         			}
+        			
         			break;
         			
         		/***********************************/
@@ -292,23 +465,18 @@ public class SharesConsole {
 	
 	private void saveAll() {
 		
+		Save.saveCore(this.core, Utils.appPath);
 		Save.saveUsers(new UsersContainer(secure.getUsers()), Utils.appPath);
-	    Save.saveCore(this.core, Utils.appPath);
-	    Save.saveProperties(props, Utils.appPath);
-		if(logger.isInfoEnabled())
-	    	logger.info("Successfully saved");
+	    	    
+	    if(saveProperties) {
+	    	Save.saveProperties(props, Utils.appPath);
+	    }
 	}
 	
 	
 	private void failReaction() {
 		
 		System.out.println(FAIL);
-	}
-	
-	
-	private void failReaction(String msg) {
-		
-		System.out.println(msg);
 	}
 	
 	

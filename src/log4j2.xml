@@ -3,13 +3,13 @@
 	<Appenders>
 		<File name="File" fileName="${sys:user.home}/ShareS/logs/run.log">
       		<PatternLayout>
-        		<Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+        		<Pattern>%d %p [%c{1.}] - %m%n</Pattern>
       		</PatternLayout>
 		</File>
 	</Appenders>
 	
 	<Loggers>
-		<Root level="TRACE">
+		<Root level="ALL">
 			<AppenderRef ref="File"/>
 		</Root>
 	</Loggers>

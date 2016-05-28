@@ -34,31 +34,42 @@ public class Family implements Serializable {
 	}
 	
 	
-	public void addPerk(String name) {
+	public boolean addPerk(String name) {
 		
-		if(name != null | name != "") {
-			perkCollection.add(new Perk(name));
-			System.out.println("Perk added");
+		if(name != null && name != "" && !isPerk(name)) {
+			perkCollection.add(new Perk(name));			
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
 	
-	public void removePerk(String name) {
+	public boolean removePerk(String name) {
 		
-		if(getPerk(name) != null) {			
+		if(isPerk(name)) {			
 			perkCollection.remove(getPerk(name));
-			System.out.println("Perk removed");
-		}
-		
-		else
-			System.out.printf("Perk %s does not exist\n", name);
+			return true;
+		} else {
+			return false;
+		}		
 	}
 	
 	
-	public Perk getPerk(String perkName) {
+	public boolean isPerk(String name) {
+				
+		if(getPerk(name) == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	
+	public Perk getPerk(String name) {
 		
 		for(Perk p: perkCollection) {
-			if(p.getName().equals(perkName))
+			if(p.getName().equals(name))
 				return p;
 		}
 		

@@ -24,6 +24,16 @@ public class Security {
 		this.users.add(new User());
 	}
 	
+	
+	private boolean isUser(String name) {
+				
+		if(getUser(name) == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 
 	public User getUser(String name) {
 		
@@ -53,17 +63,26 @@ public class Security {
 	}
 	
 
-	public void addUser(String username, String password) {
+	public boolean addUser(String username, String password) {
 		
-		this.users.add(new User(username, password));
+		if(!isUser(username)) {
+			this.users.add(new User(username, password));
+			return true;
+		} else {
+			return false;
+		}
+		
 	}
 	
 
-	public void remUser(String username) {
+	public boolean remUser(String username) {
 				
 		if(isUser(username)) {
 			User user = getUser(username);
 			this.users.remove(user);
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
@@ -97,17 +116,5 @@ public class Security {
 		}
 
 		return null;
-	}
-	
-
-	public Boolean isUser(String name) {
-		
-		for(User user : users) {
-			if (user.getName().equals(name)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 }

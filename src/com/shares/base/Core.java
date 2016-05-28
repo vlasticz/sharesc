@@ -17,22 +17,37 @@ public class Core implements Serializable {
 	}
 	
 	
-	public void addFamily(String name) {
+	public boolean addFamily(String name) {
 		
-		families.add(new Family(name, true));
-		System.out.println("Family created");
+		if(name != null && name != "" && !isFamily(name)) {
+			families.add(new Family(name, true));			
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	
-	public void removeFamily(String name) {
-		if(getFamily(name) != null) {
-			Family family = getFamily(name);
-			families.remove(family);
-			System.out.println("Family removed");
-		}
+	public boolean removeFamily(String name) {
 		
-		else
-			System.out.printf("Family %s does not exist\n", name);
+		if(isFamily(name)) {
+			Family family = getFamily(name);
+			families.remove(family);			
+			return true;
+		} else {
+			// family doesn't exist
+			return false;			
+		}
+	}
+	
+	
+	public boolean isFamily(String name) {
+				
+		if(getFamily(name) == null) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	
