@@ -216,14 +216,19 @@ public class SharesConsole {
 			        						
 			        						if(comms.length > 4) {
 			        							
-			        							ArrayList<String> hf = new ArrayList<String>();
-			        							for(int i = 0; i < comms.length; i++) {			        								
+			        							ArrayList<String> homeFamilies = new ArrayList<String>();
+			        							
+			        							for(int i = 0; i < comms.length; i++) {
+			        								
 			        								if(i > 3) {
-			        									hf.add(comms[i]);
+			        									core.addFamily(comms[i]);			        									
+			        									if(!core.isFamily(comms[i])) {
+			        										homeFamilies.add(comms[i]);
+			        									}
 			        								}
 			        							}
 			        								        								        						
-				        						if(secure.addUser(comms[2], comms[3], hf)) {
+				        						if(secure.addUser(comms[2], comms[3], homeFamilies)) {
 				        							cout("User created.");
 				        							
 				        							if(logger.isTraceEnabled())
@@ -252,7 +257,7 @@ public class SharesConsole {
 	        					
 	        				/***********************************/
 	        				default:
-	        					failReaction();
+	        					cout(FAIL);
 	        					break;
 	        			}
         			} else 
@@ -357,7 +362,7 @@ public class SharesConsole {
         						
         					/***********************************/
         					default:
-        						failReaction();
+        						cout(FAIL);
         						
         						break;
         				}
@@ -470,7 +475,7 @@ public class SharesConsole {
         			break;*/
         		/***********************************/
         		default:
-        			failReaction();
+        			cout(FAIL);
         			break;
         	}
         	        	        	
@@ -484,6 +489,7 @@ public class SharesConsole {
                 
         sc.close();
         System.out.println("Quitting ...");
+        
         if(logger.isTraceEnabled())
         	logger.trace("Exit");
 	}
@@ -491,20 +497,11 @@ public class SharesConsole {
 	
 	private void saveAll() {
 		
-		// Save.saveCore(this.core, Utils.appPath);
-		// Save.saveUsers(new UsersContainer(secure.getUsers()), Utils.appPath);
-		
 		IO.save(new DataContainer(secure.getUsers(), this.core), Utils.appPath);
 	    	    
 	    if(saveProperties) {
 	    	IO.saveProperties(props, Utils.appPath);
 	    }
-	}
-	
-	
-	private void failReaction() {
-		
-		System.out.println(FAIL);
 	}
 	
 	
