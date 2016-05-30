@@ -4,8 +4,7 @@ import com.shares.base.Core;
 import com.shares.base.Family;
 import com.shares.base.Perk;
 import com.shares.io.DataContainer;
-import com.shares.io.Load;
-import com.shares.io.Save;
+import com.shares.io.IO;
 import com.shares.security.Security;
 import com.shares.security.User;
 import com.shares.utils.Utils;
@@ -85,7 +84,7 @@ public class SharesConsole {
 		File s = new File(Utils.appPath + Utils.dataFilename);
 		
 		if (s.exists()) {
-			ArrayList<User> users = Load.load(Utils.appPath).getUsers();
+			ArrayList<User> users = IO.load(Utils.appPath).getUsers();
 			secure.setUsers(users);
 			
 		} else {
@@ -123,7 +122,7 @@ public class SharesConsole {
 		this.username = user.getName();
 		if (Boolean.valueOf(props.getProperty("load.on.init"))) {											// The very first value from properties file	
 			
-			this.core = Load.load(Utils.appPath).getCore();
+			this.core = IO.load(Utils.appPath).getCore();
 		}
 
 		do {
@@ -448,7 +447,7 @@ public class SharesConsole {
         			
         		/***********************************/
         		case "load":
-        			this.core = Load.load(Utils.appPath).getCore();
+        			this.core = IO.load(Utils.appPath).getCore();
         			break;
         			
         		/***********************************/
@@ -483,10 +482,10 @@ public class SharesConsole {
 		// Save.saveCore(this.core, Utils.appPath);
 		// Save.saveUsers(new UsersContainer(secure.getUsers()), Utils.appPath);
 		
-		Save.save(new DataContainer(secure.getUsers(), this.core), Utils.appPath);
+		IO.save(new DataContainer(secure.getUsers(), this.core), Utils.appPath);
 	    	    
 	    if(saveProperties) {
-	    	Save.saveProperties(props, Utils.appPath);
+	    	IO.saveProperties(props, Utils.appPath);
 	    }
 	}
 	

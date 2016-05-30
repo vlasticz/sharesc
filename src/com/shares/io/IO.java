@@ -1,9 +1,11 @@
 package com.shares.io;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Properties;
 
@@ -12,11 +14,17 @@ import org.apache.logging.log4j.Logger;
 
 import com.shares.utils.Utils;
 
-public class Save {
+
+public class IO {
 	
 	
-	private static Logger logger = LogManager.getLogger("Save");
+	private static Logger logger = LogManager.getLogger("IOs");
 		
+	
+	
+	// ..........................SAVE..........................
+	
+	
 	
 	public static void save(DataContainer dc, String path) {
 		
@@ -98,4 +106,31 @@ public class Save {
 			return false;
 		}
 	}
+	
+	
+	
+	// ..........................LOAD..........................
+	
+	
+	
+	public static DataContainer load(String path) {
+		 try(ObjectInputStream in = new ObjectInputStream(new FileInputStream(path + Utils.dataFilename))) {
+          DataContainer dc = (DataContainer)in.readObject();
+          in.close();
+          
+          if(logger.isInfoEnabled())
+          	logger.info("Data file loaded.");
+          
+          return dc;
+      } catch(Exception e) {
+      	System.err.println("Loading Failed");
+      	e.printStackTrace();
+      	
+      	if(logger.isErrorEnabled())
+      		logger.error("Loading failed.", e);
+      	
+      	return null;
+      }
+	}
+
 }
