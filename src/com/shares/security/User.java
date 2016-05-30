@@ -1,6 +1,7 @@
 package com.shares.security;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +13,15 @@ public class User implements Serializable {
 	private String password;
 	private Boolean blocked = false;
 	private HashMap<String, Boolean> permissions = PermissionsFactory.getPermissions();
+	private ArrayList<String> homeFamilies = new ArrayList<String>();
+	
+	
+	public User(String name, String password, ArrayList<String> homeFamilies) {
+		
+		this.username = name;
+		this.password = MD5.crypt(password);
+		this.homeFamilies = homeFamilies;
+	}
 	
 
 	public User(String name, String password) {
@@ -73,6 +83,12 @@ public class User implements Serializable {
 	public String getPass() {
 		
 		return this.password;
+	}
+	
+	
+	public ArrayList<String> getHomeFamilies() {
+		
+		return this.homeFamilies; 
 	}
 	
 	

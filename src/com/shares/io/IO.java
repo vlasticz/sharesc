@@ -12,13 +12,14 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.shares.base.Core;
 import com.shares.utils.Utils;
 
 
 public class IO {
 	
 	
-	private static Logger logger = LogManager.getLogger("IOs");
+	private static Logger logger = LogManager.getLogger("FileOps");
 		
 	
 	
@@ -119,9 +120,12 @@ public class IO {
           in.close();
           
           if(logger.isInfoEnabled())
-          	logger.info("Data file loaded.");
+          	logger.info("Data file accessed.");
           
           return dc;
+	  } catch(FileNotFoundException fe) {
+		  return new DataContainer(null, new Core());
+		  
       } catch(Exception e) {
       	System.err.println("Loading Failed");
       	e.printStackTrace();

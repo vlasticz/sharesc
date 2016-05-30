@@ -1,5 +1,7 @@
 package com.shares.security;
 
+import java.util.ArrayList;
+
 public class UserFactory {
 	
 	
@@ -10,6 +12,17 @@ public class UserFactory {
 		
 		if(username != null && username != "" && username != "root" && password != "" && password != null) {
 			return new User(username, password);
+						
+		} else {
+			return null;
+		}
+	}
+	
+	
+	public static User getUser(String username, String password, ArrayList<String> homeFamilies) {
+		
+		if(username != null && username != "" && username != "root" && password != "" && password != null) {
+			return new User(username, password, homeFamilies);
 						
 		} else {
 			return null;

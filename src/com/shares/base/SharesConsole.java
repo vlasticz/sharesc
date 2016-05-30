@@ -213,18 +213,30 @@ public class SharesConsole {
 		        					if(comms.length > 2) {
 		        						
 			        					if(comms.length > 3) {
+			        						
+			        						if(comms.length > 4) {
+			        							
+			        							ArrayList<String> hf = new ArrayList<String>();
+			        							for(int i = 0; i < comms.length; i++) {			        								
+			        								if(i > 3) {
+			        									hf.add(comms[i]);
+			        								}
+			        							}
 			        								        								        						
-			        						if(secure.addUser(comms[2], comms[3])) {
-			        							cout("User created.");
-			        							
-			        							if(logger.isTraceEnabled())
-			        								logger.trace("User " + comms[2] + " created.");
-			        							
+				        						if(secure.addUser(comms[2], comms[3], hf)) {
+				        							cout("User created.");
+				        							
+				        							if(logger.isTraceEnabled())
+				        								logger.trace("User " + comms[2] + " created.");
+				        							
+				        						} else {
+				        							cout("User already exists.");
+				        							
+				        							if(logger.isTraceEnabled())
+				        								logger.trace("User " + comms[2] + " already exists.");
+				        						}
 			        						} else {
-			        							cout("User already exists.");
-			        							
-			        							if(logger.isTraceEnabled())
-			        								logger.trace("User " + comms[2] + " already exists.");
+			        							cout("Specify at least one home family.");
 			        						}
 			        					} else {
 			        						cout("Specify password.");

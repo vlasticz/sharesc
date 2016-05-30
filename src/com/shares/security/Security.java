@@ -90,6 +90,18 @@ public class Security {
 		
 	}
 	
+	
+	public boolean addUser(String username, String password, ArrayList<String> homeFamilies) {
+		
+		if(!isUser(username)) {
+			this.users.add(UserFactory.getUser(username, password, homeFamilies));
+			return true;
+		} else {
+			return false;
+		}
+		
+	}
+	
 
 	public boolean remUser(String username) {
 				
