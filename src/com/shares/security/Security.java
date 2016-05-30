@@ -21,7 +21,7 @@ public class Security {
 	        useScanner = true;
 	    }
 		this.users = new ArrayList<User>();
-		this.users.add(new User());
+		this.users.add(UserFactory.getDefaultUser());
 	}
 	
 	
@@ -31,6 +31,22 @@ public class Security {
 			return false;
 		} else {
 			return true;
+		}
+	}
+	
+	
+	public boolean isUserPermitted(String name, String permission) {
+		
+		if(isUser(name) && PermissionsFactory.isPermission(permission)) {
+			
+			if(getUser(name).getPermissionValue(permission)) {								// Returns true or false but it's Boolean not boolean.
+				return true;
+				
+			} else {
+				return false;
+			}
+		} else {
+			return false;
 		}
 	}
 	
@@ -66,7 +82,7 @@ public class Security {
 	public boolean addUser(String username, String password) {
 		
 		if(!isUser(username)) {
-			this.users.add(new User(username, password));
+			this.users.add(UserFactory.getUser(username, password));
 			return true;
 		} else {
 			return false;

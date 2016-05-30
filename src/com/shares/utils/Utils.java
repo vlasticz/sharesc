@@ -10,6 +10,7 @@ public class Utils {
 	public static final String appPath = System.getProperty("user.home") + "/ShareS";
 	public static final String coreFilename = "/core.dat";
 	public static final String usersFilename = "/uc.dat";
+	public static final String dataFilename = "/persistent.data";
 	public static final String propsFilename = "/shares.properties";
 	
 	
@@ -22,7 +23,6 @@ public class Utils {
 		Properties defaultProps = new Properties();
 		
 		defaultProps.setProperty("load.on.init", "true");
-		defaultProps.setProperty("load.users", "true");
 		
 		return defaultProps;
 	}

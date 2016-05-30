@@ -10,33 +10,31 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.shares.base.Core;
-import com.shares.security.UsersContainer;
 import com.shares.utils.Utils;
 
 public class Save {
 	
 	
 	private static Logger logger = LogManager.getLogger("Save");
-			
-	
-	public static void saveCore(Core core, String path) {
 		
-		if(core != null) {
-			try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + Utils.coreFilename))) {				
-	            out.writeObject(core);
+	
+	public static void save(DataContainer dc, String path) {
+		
+		if(dc != null) {
+			try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + Utils.dataFilename))) {				
+	            out.writeObject(dc);
 	            out.flush();
 	            out.close();
 	            
 	            if(logger.isInfoEnabled())
-	            	logger.info("Core file saved.");
+	            	logger.info("Data file saved.");
 	            
 			} catch(FileNotFoundException fe) {							
 				if(logger.isErrorEnabled())
 					logger.error("Path doesn't exist. Will be created.", fe);
 				
 				createPath(path);
-				saveCore(core, path);
+				save(dc, path);
 	            
 	        } catch(IOException e) {	        	
 	        	e.printStackTrace();
@@ -45,44 +43,10 @@ public class Save {
 	        		logger.error("Saving failed.", e);	        	
 	        }			
 		} else {
-			System.err.println("Saving failed. Core is null.");
+			System.err.println("Saving failed. Data is null.");
 			
 			if(logger.isErrorEnabled())
-				logger.error("Saving failed. Core is null.");
-		}
-		
-	}
-	
-	
-	public static void saveUsers(UsersContainer uc, String path) {
-		
-		if(uc != null) {
-			try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + Utils.usersFilename))) {				
-	            out.writeObject(uc);
-	            out.flush();
-	            out.close();
-	            
-	            if(logger.isInfoEnabled())
-	            	logger.info("Users file saved.");
-	            
-			} catch(FileNotFoundException fe) {				
-				if(logger.isErrorEnabled())
-					logger.error("Path doesn't exist. Will be created.", fe);
-				
-				createPath(path);
-				saveUsers(uc, path);
-	            
-	        } catch(IOException e) {	        	
-	        	e.printStackTrace();
-	        	
-	        	if(logger.isErrorEnabled())
-	        		logger.error("Saving failed.", e);
-	        }
-		} else {
-			System.err.println("Saving failed. Users are null!");
-			
-			if(logger.isErrorEnabled())
-				logger.error("Saving failed. Users are null.");
+				logger.error("Saving failed. Data is null.");
 		}
 		
 	}

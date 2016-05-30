@@ -3,11 +3,11 @@ package com.shares.base;
 import com.shares.base.Core;
 import com.shares.base.Family;
 import com.shares.base.Perk;
+import com.shares.io.DataContainer;
 import com.shares.io.Load;
 import com.shares.io.Save;
 import com.shares.security.Security;
 import com.shares.security.User;
-import com.shares.security.UsersContainer;
 import com.shares.utils.Utils;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class SharesConsole {
+	
 	
 	private static SharesConsole shares;
 	private Scanner sc = new Scanner(System.in);
@@ -74,23 +75,24 @@ public class SharesConsole {
 		} catch(IOException e) {
 			if(logger.isErrorEnabled())
 				logger.error(" ", e);
+			
 			e.printStackTrace();
 		}
 		
 		
 		// Console begins
 		cout(" ***-_ SHARES " + Utils.VERSION + " _-***");
-		File s = new File(Utils.appPath + Utils.usersFilename);
+		File s = new File(Utils.appPath + Utils.dataFilename);
 		
-		if (s.exists() && Boolean.valueOf(props.getProperty("load.users"))) {
-			ArrayList<User> users = Load.loadUsers(Utils.appPath).getUsers();			
+		if (s.exists()) {
+			ArrayList<User> users = Load.load(Utils.appPath).getUsers();
 			secure.setUsers(users);
 			
 		} else {
-			cout("No users file found or loading is forbiden. Default one made available.");
+			cout("No data file found. Default user made available.");
 			
 			if(logger.isWarnEnabled())
-				logger.warn("No users file found or loading is forbiden. Default one made available.");
+				logger.warn("No data file found. Default user made available.");
 		}
 		
 
@@ -98,7 +100,7 @@ public class SharesConsole {
 		
 		if (user != null) {
 			cout("Login successful!\n");
-			
+									
 			if(logger.isInfoEnabled())
 				logger.info("User successfully logged in. User: " + user.getName() + ".");
 			
@@ -121,7 +123,7 @@ public class SharesConsole {
 		this.username = user.getName();
 		if (Boolean.valueOf(props.getProperty("load.on.init"))) {											// The very first value from properties file	
 			
-			this.core = Load.loadCore(Utils.appPath);
+			this.core = Load.load(Utils.appPath).getCore();
 		}
 
 		do {
@@ -207,27 +209,32 @@ public class SharesConsole {
 	        				/***********************************/
 	        				case "user":
 	        					
-	        					if(comms.length > 2) {
-	        						
-		        					if(comms.length > 3) {
+	        					if(secure.getUser(username).getPermissionValue("users_admin")) {
+	        					
+		        					if(comms.length > 2) {
 		        						
-		        						if(secure.addUser(comms[2], comms[3])) {
-		        							cout("User created.");
-		        							
-		        							if(logger.isTraceEnabled())
-		        								logger.trace("User " + comms[2] + " created.");
-		        							
-		        						} else {
-		        							cout("User already exists.");
-		        							
-		        							if(logger.isTraceEnabled())
-		        								logger.trace("User " + comms[2] + " already exists.");
-		        						}										
+			        					if(comms.length > 3) {
+			        								        								        						
+			        						if(secure.addUser(comms[2], comms[3])) {
+			        							cout("User created.");
+			        							
+			        							if(logger.isTraceEnabled())
+			        								logger.trace("User " + comms[2] + " created.");
+			        							
+			        						} else {
+			        							cout("User already exists.");
+			        							
+			        							if(logger.isTraceEnabled())
+			        								logger.trace("User " + comms[2] + " already exists.");
+			        						}
+			        					} else {
+			        						cout("Specify password.");
+			        					}
 		        					} else {
-		        						cout("Specify password.");
+		        						cout("Specify username.");
 		        					}
 	        					} else {
-	        						cout("Specify username.");
+	        						cout("Insufficient permissions.");
 	        					}
 	        					
 	        					break;
@@ -307,25 +314,33 @@ public class SharesConsole {
         					/***********************************/
         					case "user":
         						
-        						if(comms.length > 2) {	
+        						if(secure.getUser(username).getPermissionValue("users_admin")) {
+        						
+	        						if(comms.length > 2) {	
+	        							
+		        						if(secure.remUser(comms[2])) {
+		        							cout("User removed.");
+		        							
+		        							if(logger.isTraceEnabled())
+		        								logger.trace("User " + comms[2] + " removed.");
+		        							
+		        						} else {
+		        							cout("User " + comms[2] + " doesn't exist.");
+		        							
+		        							if(logger.isTraceEnabled()) {
+		        								logger.trace("User " + comms[2] + " doesn't exist.");
+		        							}
+		        						}
+										
+		        					} else {
+		        						cout("Specify username.");
+		        					}
+        						} else {
+        							cout("Insufficient permissions.");
         							
-	        						if(secure.remUser(comms[2])) {
-	        							cout("User removed.");
-	        							
-	        							if(logger.isTraceEnabled())
-	        								logger.trace("User " + comms[2] + " removed.");
-	        							
-	        						} else {
-	        							cout("User " + comms[2] + " doesn't exist.");
-	        							
-	        							if(logger.isTraceEnabled()) {
-	        								logger.trace("User " + comms[2] + " doesn't exist.");
-	        							}
-	        						}
-									
-	        					} else {
-	        						cout("Specify username.");
-	        					}
+        							if(logger.isWarnEnabled())
+        								logger.warn("Insufficient permissions. User: " + username + ". Action: remove user.");
+        						}
 	        					
 	        					break;
         						
@@ -433,7 +448,7 @@ public class SharesConsole {
         			
         		/***********************************/
         		case "load":
-        			this.core = Load.loadCore(Utils.appPath);
+        			this.core = Load.load(Utils.appPath).getCore();
         			break;
         			
         		/***********************************/
@@ -465,8 +480,10 @@ public class SharesConsole {
 	
 	private void saveAll() {
 		
-		Save.saveCore(this.core, Utils.appPath);
-		Save.saveUsers(new UsersContainer(secure.getUsers()), Utils.appPath);
+		// Save.saveCore(this.core, Utils.appPath);
+		// Save.saveUsers(new UsersContainer(secure.getUsers()), Utils.appPath);
+		
+		Save.save(new DataContainer(secure.getUsers(), this.core), Utils.appPath);
 	    	    
 	    if(saveProperties) {
 	    	Save.saveProperties(props, Utils.appPath);
