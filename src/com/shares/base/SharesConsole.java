@@ -151,22 +151,39 @@ public class SharesConsole {
 	        				/***********************************/
 	        				case "family":
 	        					
-	        					if(comms.length > 2) {
-	        						
-		        					if(core.addFamily(comms[2])) {
-		        						cout("Family created.");
+	        					if(secure.getUser(username).getPermissionValue("new_family")) {
+	        					
+		        					if(comms.length > 2) {
 		        						
-		        						if(logger.isTraceEnabled())
-		        							logger.trace("Family " + comms[2] + " created.");
-		        						
+			        					if(core.addFamily(comms[2])) {
+			        						cout("Family created.");
+			        						
+			        						if(logger.isTraceEnabled())
+			        							logger.trace("Family " + comms[2] + " created.");
+			        						
+			        						if(secure.getUser(username).addHomeFamily(comms[2])) {
+			        							cout("Family added to home families to user " + username);
+			        							
+			        							if(logger.isTraceEnabled())
+			        								logger.trace("Family " + comms[2] + " added to user " + username + " as home family.");
+			        						} else {
+			        							cout("Failed to add family to home families of user " + username);
+			        							
+			        							if(logger.isTraceEnabled())
+			        								logger.trace("Failed to add family" + comms[2] + " to home families of user " + username);
+			        						}
+			        						
+			        					} else {
+			        						cout("Failed to create family. Name is invalid or the family already exists.");
+			        						
+			        						if(logger.isTraceEnabled())
+			        							logger.trace("Failed to create family " + comms[2] + ". Name is invalid or the family already exists.");
+			        					}
 		        					} else {
-		        						cout("Failed to create family. Name is invalid or the family already exists.");
-		        						
-		        						if(logger.isTraceEnabled())
-		        							logger.trace("Failed to create family " + comms[2] + ". Name is invalid or the family already exists.");
+		        						cout("Specify valid family name.");
 		        					}
 	        					} else {
-	        						cout("Specify valid family name.");
+	        						cout("Insufficient permissions.");
 	        					}
 	        					
 	        					break;
@@ -213,35 +230,18 @@ public class SharesConsole {
 		        					if(comms.length > 2) {
 		        						
 			        					if(comms.length > 3) {
-			        						
-			        						if(comms.length > 4) {
-			        							
-			        							ArrayList<String> homeFamilies = new ArrayList<String>();
-			        							
-			        							for(int i = 0; i < comms.length; i++) {
-			        								
-			        								if(i > 3) {
-			        									core.addFamily(comms[i]);			        									
-			        									if(!core.isFamily(comms[i])) {
-			        										homeFamilies.add(comms[i]);
-			        									}
-			        								}
-			        							}
 			        								        								        						
-				        						if(secure.addUser(comms[2], comms[3], homeFamilies)) {
-				        							cout("User created.");
-				        							
-				        							if(logger.isTraceEnabled())
-				        								logger.trace("User " + comms[2] + " created.");
-				        							
-				        						} else {
-				        							cout("User already exists.");
-				        							
-				        							if(logger.isTraceEnabled())
-				        								logger.trace("User " + comms[2] + " already exists.");
-				        						}
+			        						if(secure.addUser(comms[2], comms[3])) {
+			        							cout("User created.");
+			        							
+			        							if(logger.isTraceEnabled())
+			        								logger.trace("User " + comms[2] + " created.");
+			        							
 			        						} else {
-			        							cout("Specify at least one home family.");
+			        							cout("User already exists.");
+			        							
+			        							if(logger.isTraceEnabled())
+			        								logger.trace("User " + comms[2] + " already exists.");
 			        						}
 			        					} else {
 			        						cout("Specify password.");
@@ -448,11 +448,22 @@ public class SharesConsole {
         		/***********************************/										// just optical separation :)        			
         		case "show":  
         			
-        			for(Family family : core.getFamilies()) {
-        				System.out.printf("\nFamily: %s\n", family.getName());
-        				for(Perk perk : family.getPerks()) {
-        					cout(" Perk: " + perk.getCaption() + ": " + perk.getValue());
-        				}
+        			if(secure.getUser(username).getPermissionValue("families_admin")) {
+        				
+        				for(Family family : core.getFamilies()) {
+            				System.out.printf("\nFamily: %s\n", family.getName());
+            				for(Perk perk : family.getPerks()) {
+            					cout(" Perk: " + perk.getCaption() + ": " + perk.getValue());
+            				}
+            			}
+        			} else {
+        				
+	        			for(Family family : core.getFamiliesByName(secure.getUser(username).getHomeFamilies())) {
+	        				System.out.printf("\nFamily: %s\n", family.getName());
+	        				for(Perk perk : family.getPerks()) {
+	        					cout(" Perk: " + perk.getCaption() + ": " + perk.getValue());
+	        				}
+	        			}
         			}
         			
         			break;

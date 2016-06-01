@@ -21,7 +21,7 @@ public class UserFactory {
 	
 	public static User getUser(String username, String password, ArrayList<String> homeFamilies) {
 		
-		if(username != null && username != "" && username != "root" && password != "" && password != null) {
+		if(username != null && username != "" && username != "root" && password != "" && password != null && homeFamilies != null) {
 			return new User(username, password, homeFamilies);
 						
 		} else {
@@ -38,6 +38,7 @@ public class UserFactory {
 			
 			User user = new User();
 			user.setPermissionValue("users_admin", true);
+			user.setPermissionValue("families_admin", true);
 			
 			return user;
 			

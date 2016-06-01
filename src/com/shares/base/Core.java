@@ -62,6 +62,24 @@ public class Core implements Serializable {
 	}
 	
 	
+	public ArrayList<Family> getFamiliesByName(ArrayList<String> names) {
+		
+		ArrayList<Family> ans = new ArrayList<Family>();
+		
+		for(String name : names) {
+			if(isFamily(name)) {
+				ans.add(getFamily(name));
+			}
+		}
+		
+		if(ans.isEmpty()) {
+			return null;
+		} else {
+			return ans;
+		}
+	}
+	
+	
 	public ArrayList<Family> getFamilies() {
 		return families;
 	}

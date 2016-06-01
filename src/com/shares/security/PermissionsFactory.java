@@ -10,7 +10,8 @@ public class PermissionsFactory {
 		HashMap<String, Boolean> permissions = new HashMap<String, Boolean>();
 		
 		permissions.put("users_admin", false);
-		permissions.put("new_family", false);
+		permissions.put("families_admin", false);
+		permissions.put("new_family", true);
 		permissions.put("new_perk", true);
 		
 		return permissions;

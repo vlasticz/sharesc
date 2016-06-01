@@ -92,6 +92,29 @@ public class User implements Serializable {
 	}
 	
 	
+	public boolean isHomeFamily(String name) {
+		
+		for(String s : homeFamilies) {
+			if(s.equals(name)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	
+	public boolean addHomeFamily(String name) {
+		
+		if(!isHomeFamily(name)) {
+			homeFamilies.add(name);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	
 	public Boolean isBlocked() {
 		
 		return this.blocked;
